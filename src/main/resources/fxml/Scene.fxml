@@ -28,6 +28,7 @@
               <MenuItem mnemonicParsing="false" onAction="#addColumnAction" text="Add Column" />
                   <MenuItem mnemonicParsing="false" onAction="#deleteColumnAction" text="Delete Column" />
                   <MenuItem mnemonicParsing="false" onAction="#addRowsAction" text="Add Rows" />
+                  <MenuItem fx:id="deleteRowsMenuItem" mnemonicParsing="false" onAction="#deleteRowsAction" text="Delete Rows" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Help">

@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -14,6 +15,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Dialog;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextInputDialog;
@@ -23,6 +25,9 @@ import javafx.scene.control.cell.TextFieldTableCell;
 public class FXMLController implements Initializable {
 
     private int columnCounter = 0;
+    
+    @FXML
+    private MenuItem deleteRowsMenuItem;
 
     ObservableList<ObservableMap<String, StringProperty>> data;
 
@@ -107,6 +112,12 @@ public class FXMLController implements Initializable {
             System.out.println(" ");
         });
     }
+    
+     @FXML
+    private void deleteRowsAction(ActionEvent event) {
+        int index = mainTable.getSelectionModel().getSelectedIndex();
+        data.remove(index);
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -117,5 +128,13 @@ public class FXMLController implements Initializable {
 
         mainTable.setEditable(true);
         mainTable.setItems(data);
+        
+        deleteRowsMenuItem
+                .disableProperty()
+                .bind(
+                        Bindings.isEmpty(
+                                mainTable.getSelectionModel().getSelectedItems()
+                        )
+                );
     }
 }

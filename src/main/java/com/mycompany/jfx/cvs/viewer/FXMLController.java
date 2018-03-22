@@ -17,54 +17,49 @@ import javafx.scene.control.cell.TextFieldTableCell;
 
 
 public class FXMLController implements Initializable {
+    private int columnCounter = 0;
     
-    ObservableList<ObservableMap<String, StringProperty>> oPeople;
+    ObservableList<ObservableMap<String, StringProperty>> data;
     
     @FXML
     private TableView<ObservableMap<String, StringProperty>> mainTable;
    
     @FXML
     private void addColumnAction(ActionEvent event) {
-//        System.out.println("You clicked me!");
-//        TableColumn column  = new TableColumn("something");
-//        mainTable.getColumns().add(column);
-        //oPeople.add(new Person("algo", "something"));
-        for (ObservableMap<String, StringProperty> person : oPeople) {
-            System.out.println("firstName:" + person.get("firstName").get());
-            System.out.println("lastName:" + person.get("lastName").get());
+        String columnName = "col" + columnCounter;
+        for(ObservableMap<String, StringProperty> row  : data){
+            row.put(columnName, new SimpleStringProperty(""));
         }
+        
+        TableColumn<ObservableMap<String, StringProperty>, String> newColumn  = new TableColumn(columnName);
+        newColumn.setCellValueFactory(new MapValueFactory(columnName));
+        newColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        newColumn.setEditable(true);
+        
+        mainTable.getColumns().add(newColumn);
+        
+        columnCounter++;
     }
+    
+    @FXML
+    private void somethingAction(ActionEvent event) {
+        data.forEach((row) -> {
+            row.forEach((t, u) -> {
+                System.out.print(t + ":" + "'" + u.get() + "', ");
+            });
+            System.out.println(" ");
+        });
+    }
+    
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        //Map list
-        ObservableMap<String, StringProperty> dp0  = FXCollections.observableHashMap();
-        dp0.put("firstName", new SimpleStringProperty("manuel"));
-        dp0.put("lastName", new SimpleStringProperty("asdf"));
-        
-        ObservableMap<String, StringProperty> dp1  = FXCollections.observableHashMap();
-        dp1.put("firstName", new SimpleStringProperty("pirru"));
-        dp1.put("lastName", new SimpleStringProperty("qwer"));
-        
-        oPeople = FXCollections.observableArrayList();
-        oPeople.addAll(dp0, dp1);
-        
-        TableColumn<ObservableMap<String, StringProperty>, String> firstNameColumn  = new TableColumn("First Name");
-        firstNameColumn.setCellValueFactory(new MapValueFactory("firstName"));
-        firstNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        firstNameColumn.setEditable(true);
-        
-        TableColumn<ObservableMap<String, StringProperty>, String> lastNameColumn  = new TableColumn("Last Name");
-        lastNameColumn.setCellValueFactory(new MapValueFactory("lastName"));
-        lastNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        lastNameColumn.setEditable(true);
+        data = FXCollections.observableArrayList();
+        for (int i = 0; i < 10; i++) {
+            data.add(FXCollections.observableHashMap());
+        }
 
         mainTable.setEditable(true);
-        mainTable.getColumns().addAll(firstNameColumn, lastNameColumn);
-        mainTable.setItems(oPeople);
-        
-        oPeople.get(0).get("firstName").addListener((observable, oldValue, newValue) -> {
-            System.out.println(newValue);
-        });
+        mainTable.setItems(data);
     }    
 }

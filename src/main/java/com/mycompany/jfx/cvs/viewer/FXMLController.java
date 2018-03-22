@@ -1,28 +1,27 @@
 package com.mycompany.jfx.cvs.viewer;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.MapValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 
 
 public class FXMLController implements Initializable {
     
-    ObservableList<Person> oPeople;
+    ObservableList<ObservableMap<String, StringProperty>> oPeople;
     
     @FXML
-    private TableView<Person> mainTable;
+    private TableView<ObservableMap<String, StringProperty>> mainTable;
    
     @FXML
     private void addColumnAction(ActionEvent event) {
@@ -30,59 +29,33 @@ public class FXMLController implements Initializable {
 //        TableColumn column  = new TableColumn("something");
 //        mainTable.getColumns().add(column);
         //oPeople.add(new Person("algo", "something"));
-        for (Person person : oPeople) {
-            System.out.println("firstName:" + person.getFirstName());
-            System.out.println("lastName:" + person.getLastName());
-            
+        for (ObservableMap<String, StringProperty> person : oPeople) {
+            System.out.println("firstName:" + person.get("firstName").get());
+            System.out.println("lastName:" + person.get("lastName").get());
         }
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        //Clasic list
-        Person person0 = new Person("manuel", "asdf");
-        Person person1 = new Person("pirru", "qwer");
-        List<Person> people = new ArrayList<>();
-        people.add(person0);
-        people.add(person1);
-
-        for (Person person : people) {
-            System.out.println("firstName:" + person.getFirstName());
-            System.out.println("lastName:" + person.getLastName());
-            
-        }
-        
         //Map list
-        Map<String, String> dp0  = new HashMap<>();
-        dp0.put("firstName", "manuel");
-        dp0.put("lastName", "asdf");
+        ObservableMap<String, StringProperty> dp0  = FXCollections.observableHashMap();
+        dp0.put("firstName", new SimpleStringProperty("manuel"));
+        dp0.put("lastName", new SimpleStringProperty("asdf"));
         
-        Map<String, String> dp1  = new HashMap<>();
-        dp1.put("firstName", "pirru");
-        dp1.put("lastName", "qwer");
-        
-        List<Map<String, String>> dPeople = new ArrayList<>();
-        dPeople.add(dp0);
-        dPeople.add(dp1);
-        
-        for (Map<String, String> person : dPeople) {
-            System.out.println("firstName:" + person.get("firstName"));
-            System.out.println("lastName:" + person.get("lastName"));
-        }
-        
-        dp1.put("age", "1");
-        
+        ObservableMap<String, StringProperty> dp1  = FXCollections.observableHashMap();
+        dp1.put("firstName", new SimpleStringProperty("pirru"));
+        dp1.put("lastName", new SimpleStringProperty("qwer"));
         
         oPeople = FXCollections.observableArrayList();
-        oPeople.addAll(person0, person1);
+        oPeople.addAll(dp0, dp1);
         
-        TableColumn<Person, String> firstNameColumn  = new TableColumn("First Name");
-        firstNameColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
+        TableColumn<ObservableMap<String, StringProperty>, String> firstNameColumn  = new TableColumn("First Name");
+        firstNameColumn.setCellValueFactory(new MapValueFactory("firstName"));
         firstNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         firstNameColumn.setEditable(true);
         
-        TableColumn<Person, String> lastNameColumn  = new TableColumn("Last Name");
-        lastNameColumn.setCellValueFactory(new PropertyValueFactory<>("lastName"));
+        TableColumn<ObservableMap<String, StringProperty>, String> lastNameColumn  = new TableColumn("Last Name");
+        lastNameColumn.setCellValueFactory(new MapValueFactory("lastName"));
         lastNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         lastNameColumn.setEditable(true);
 
@@ -90,7 +63,7 @@ public class FXMLController implements Initializable {
         mainTable.getColumns().addAll(firstNameColumn, lastNameColumn);
         mainTable.setItems(oPeople);
         
-        person1.firstNameProperty().addListener((observable, oldValue, newValue) -> {
+        oPeople.get(0).get("firstName").addListener((observable, oldValue, newValue) -> {
             System.out.println(newValue);
         });
     }    

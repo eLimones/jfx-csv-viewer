@@ -26,6 +26,8 @@
           <Menu mnemonicParsing="false" text="Edit">
             <items>
               <MenuItem mnemonicParsing="false" onAction="#addColumnAction" text="Add Column" />
+                  <MenuItem mnemonicParsing="false" onAction="#deleteColumnAction" text="Delete Column" />
+                  <MenuItem mnemonicParsing="false" onAction="#addRowsAction" text="Add Rows" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Help">

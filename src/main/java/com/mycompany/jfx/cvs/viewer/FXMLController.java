@@ -1,6 +1,5 @@
 package com.mycompany.jfx.cvs.viewer;
 
-import com.sun.javafx.perf.PerformanceTracker;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
@@ -11,10 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -24,9 +21,7 @@ import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
 import javafx.scene.control.ChoiceDialog;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -35,8 +30,6 @@ import javafx.scene.control.cell.MapValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
 
 public class FXMLController implements Initializable {
 
@@ -101,20 +94,10 @@ public class FXMLController implements Initializable {
             return writer;
         }).ifPresent((writer) -> {
             try {
-                CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT);
-                data.forEach((row) -> {
-                    try {
-                        Set<String> keySet = row.keySet();
-                        List<String> list = keySet.stream().map((key) -> {
-                            return row.get(key).get();
-                        }).collect(Collectors.toList());
-                        csvPrinter.printRecord(list);
-                    } catch (IOException ex) {
-                        Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                });
-                csvPrinter.flush();
-                csvPrinter.close();
+                ArrayList keyList = new  ArrayList(data.get(0).keySet());
+                TableModel model = TablePresenter.toModel(keyList, data);
+                CSVTranslator csvTranslator = new CSVTranslator(writer);
+                csvTranslator.print(model);
             } catch (IOException ex) {
                 Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
             }

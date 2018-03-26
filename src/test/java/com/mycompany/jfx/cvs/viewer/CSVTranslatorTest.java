@@ -5,6 +5,7 @@
  */
 package com.mycompany.jfx.cvs.viewer;
 
+import java.io.CharArrayReader;
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.util.Arrays;
@@ -15,9 +16,9 @@ import static org.junit.Assert.*;
  *
  * @author manuel
  */
-public class SimpleCSVPrinterTest {
+public class CSVTranslatorTest {
     
-    public SimpleCSVPrinterTest() {
+    public CSVTranslatorTest() {
     }
 
     @Test
@@ -29,7 +30,7 @@ public class SimpleCSVPrinterTest {
         
         CharArrayWriter writer = new CharArrayWriter();
         
-        SimpleCSVPrinter  printer = new SimpleCSVPrinter(writer);
+        CSVTranslator  printer = new CSVTranslator(writer);
         printer.print(table);
         
         assertArrayEquals("header0,header1\r\na,0\r\nb,1\r\n".toCharArray(), writer.toCharArray());
@@ -37,19 +38,17 @@ public class SimpleCSVPrinterTest {
     
     @Test
     public void parsesCSVToTable() throws IOException {
-//        String csvString = "header0,header1\r\na,0\r\nb,1\r\n";
-//        
-//        CharArrayWriter writer = new CharArrayWriter();
-//        
-//        TableModel table = 
-//        table.headers.addAll(Arrays.asList("header0", "header1"));
-//        table.data.add(Arrays.asList("a", "0"));
-//        table.data.add(Arrays.asList("b", "1"));
-//        
-//        
-//        SimpleCSVPrinter  printer = new SimpleCSVPrinter(table, writer);
-//        printer.print();
-//        
+        String csvString = "header0,header1\r\na,0\r\nb,1\r\n";
+        
+        CharArrayWriter writer = new CharArrayWriter();
+        CSVTranslator  printer = new CSVTranslator(writer);
+        
+        CharArrayReader reader = new CharArrayReader(csvString.toCharArray());
+        TableModel table = printer.parse(reader);
+        
+        assertEquals(Arrays.asList("header0", "header1"), table.headers);
+        assertEquals(Arrays.asList("a", "0"), table.data.get(0));
+        assertEquals(Arrays.asList("b", "1"),table.data.get(1));
     }
     
 }

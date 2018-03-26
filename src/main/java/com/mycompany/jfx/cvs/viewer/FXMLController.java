@@ -1,6 +1,8 @@
 package com.mycompany.jfx.cvs.viewer;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.CharArrayWriter;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -36,13 +38,12 @@ public class FXMLController implements Initializable {
     private int columnCounter = 0;
     private Stage stage;
     ObservableList<ObservableMap<String, StringProperty>> data;
-    
+
     @FXML
     private MenuItem deleteRowsMenuItem;
 
     @FXML
     private TableView<ObservableMap<String, StringProperty>> mainTable;
-    
 
     @FXML
     private void addColumnAction(ActionEvent event) {
@@ -78,12 +79,37 @@ public class FXMLController implements Initializable {
             newRow.put(key, new SimpleStringProperty(""));
         });
         data.add(newRow);
-        
+
     }
-    
-     @FXML
+
+    @FXML
+    private void openAction(ActionEvent event) {
+        showFileDialog(false).map((file) -> {
+            BufferedReader reader = null;
+            try {
+                reader = Files.newBufferedReader(file.toPath());
+            } catch (IOException ex) {
+                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return reader;
+        }).ifPresent((reader) -> {
+            try {
+                CharArrayWriter writer = new CharArrayWriter();
+                CSVTranslator csvTranslator = new CSVTranslator(writer);
+                TableModel model = csvTranslator.parse(reader);
+                model.headers.forEach((columnName) -> {
+                    addColumn(columnName);
+                });
+                data = TablePresenter.toBoundList(model);
+                mainTable.setItems(data);
+            } catch (IOException ex) {
+                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+    }
+
+    @FXML
     private void saveAction(ActionEvent event) {
-        System.out.println("hello world");
         showFileDialog(true).map((file) -> {
             BufferedWriter writer = null;
             try {
@@ -94,7 +120,7 @@ public class FXMLController implements Initializable {
             return writer;
         }).ifPresent((writer) -> {
             try {
-                ArrayList keyList = new  ArrayList(data.get(0).keySet());
+                ArrayList keyList = new ArrayList(data.get(0).keySet());
                 TableModel model = TablePresenter.toModel(keyList, data);
                 CSVTranslator csvTranslator = new CSVTranslator(writer);
                 csvTranslator.print(model);
@@ -103,10 +129,16 @@ public class FXMLController implements Initializable {
             }
         });
     }
-    
-    private Optional<File> showFileDialog(boolean isSave){
+
+    private Optional<File> showFileDialog(boolean isSave) {
         FileChooser fileChooser = new FileChooser();
-        File file = fileChooser.showSaveDialog(stage);
+        File file;
+        if (isSave) {
+            file = fileChooser.showSaveDialog(stage);
+        } else {
+            file = fileChooser.showOpenDialog(stage);
+
+        }
         return Optional.ofNullable(file);
     }
 
@@ -151,8 +183,8 @@ public class FXMLController implements Initializable {
             System.out.println(" ");
         });
     }
-    
-     @FXML
+
+    @FXML
     private void deleteRowsAction(ActionEvent event) {
         int index = mainTable.getSelectionModel().getSelectedIndex();
         data.remove(index);
@@ -167,7 +199,7 @@ public class FXMLController implements Initializable {
 
         mainTable.setEditable(true);
         mainTable.setItems(data);
-        
+
         deleteRowsMenuItem
                 .disableProperty()
                 .bind(

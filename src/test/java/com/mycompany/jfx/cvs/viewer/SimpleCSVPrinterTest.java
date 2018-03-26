@@ -21,7 +21,7 @@ public class SimpleCSVPrinterTest {
     }
 
     @Test
-    public void testSomeMethod() throws IOException {
+    public void parsesTableToCSV() throws IOException {
         TableModel table = new TableModel();
         table.headers.addAll(Arrays.asList("header0", "header1"));
         table.data.add(Arrays.asList("a", "0"));
@@ -29,10 +29,27 @@ public class SimpleCSVPrinterTest {
         
         CharArrayWriter writer = new CharArrayWriter();
         
-        SimpleCSVPrinter  printer = new SimpleCSVPrinter(table, writer);
-        printer.print();
+        SimpleCSVPrinter  printer = new SimpleCSVPrinter(writer);
+        printer.print(table);
         
         assertArrayEquals("header0,header1\r\na,0\r\nb,1\r\n".toCharArray(), writer.toCharArray());
+    }
+    
+    @Test
+    public void parsesCSVToTable() throws IOException {
+//        String csvString = "header0,header1\r\na,0\r\nb,1\r\n";
+//        
+//        CharArrayWriter writer = new CharArrayWriter();
+//        
+//        TableModel table = 
+//        table.headers.addAll(Arrays.asList("header0", "header1"));
+//        table.data.add(Arrays.asList("a", "0"));
+//        table.data.add(Arrays.asList("b", "1"));
+//        
+//        
+//        SimpleCSVPrinter  printer = new SimpleCSVPrinter(table, writer);
+//        printer.print();
+//        
     }
     
 }

@@ -17,15 +17,13 @@ import org.apache.commons.csv.CSVPrinter;
 public class SimpleCSVPrinter {
     
     private final CSVPrinter printer;
-    private final TableModel table;
     
 
-    SimpleCSVPrinter(TableModel table, Appendable writer) throws IOException {
+    SimpleCSVPrinter(Appendable writer) throws IOException {
         this.printer = new CSVPrinter(writer, CSVFormat.DEFAULT);
-        this.table = table;
     }
 
-    void print() throws IOException {
+    void print(TableModel table) throws IOException {
         this.printer.printRecord(table.headers);
         this.printer.printRecords(table.data);
         this.printer.flush();
